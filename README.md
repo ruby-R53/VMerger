@@ -39,6 +39,7 @@ So in both cases, to render such video, the command for that would be:
 $ vmerger.sh funnycompilation.txt
 ```
 That's it! Dead-simple stuff :)
+
 This can be useful for things like video game soundtrack videos and compilation
 ones, because of how fast it is. No dependencies whatsoever, other than Bash,
 awk and FFmpeg. All of which should already come preinstalled in most distros.
