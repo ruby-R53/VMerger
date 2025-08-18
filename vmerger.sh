@@ -24,10 +24,12 @@ RENDER_ARGS=(-c:v libx264 -c:a copy -crf 0 -qp 0 -preset ultrafast -color_range 
 VIDEO_FLTRS=(scale=out_color_matrix=bt709,"${TEXT_PARAMS[@]}")
 
 # get how many files we have to work on
-ENTRIES=$(cat $1 | wc -l)
+ENTRIES=$(sed '$ d' $1 | wc -l)
+# and our output file name
+OUTFILE=$(awk 'END { print }' $1)
 
 # check if any captions are present and apply them
-for (( i = 1; i <= $(( ENTRIES - 1 )); i++ )); do
+for (( i = 1; i <= ${ENTRIES}; i++ )); do
 	# get label for current video
 	LABEL="$(head -${i} $1 | tail -1 | awk -F"=" '{ print $2 }')"
 
@@ -54,7 +56,7 @@ for (( i = 1; i <= $(( ENTRIES - 1 )); i++ )); do
 done
 
 # feed files to ffmpeg's input
-for (( i = 1; i <= $(( ENTRIES - 1 )); i++ )); do
+for (( i = 1; i <= ${ENTRIES}; i++ )); do
 	FILE="$(head -${i} $1 | tail -1 | awk -F"=" '{ print $1 }')"
 
 	# check if the user wants to merge labeled
@@ -71,7 +73,7 @@ for (( i = 1; i <= $(( ENTRIES - 1 )); i++ )); do
 done
 
 # tell ffmpeg about the streams we have
-for (( i = 0; i <= $(( ENTRIES - 2 )); i++ )); do
+for (( i = 0; i <= $(( ENTRIES - 1 )); i++ )); do
 	STREAMS+="[${i}:v][${i}:a]"
 done
 
@@ -79,6 +81,6 @@ done
 # and make it merge all the videos we've got
 ffmpeg -v "${LOGLVL}" -threads "${THREADS}" "${FILES[@]}" \
 	-crf 0 -qp 0 -preset ultrafast -c:a pcm_f32le \
-	-filter_complex "${STREAMS}"concat=n="$(( ENTRIES - 1 ))":v=1:a=1 \
-	"$(head -${ENTRIES} $1 | tail -1)"
+	-filter_complex "${STREAMS}"concat=n="${ENTRIES}":v=1:a=1 \
+	"${OUTFILE}"
 	# and finally use last file entry as our output file name
