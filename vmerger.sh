@@ -29,7 +29,6 @@ ENTRIES=("$(sed '$ d' $1 | awk -F"=" '{ print $1 }' | tr '\n' ' ')")
 OUTFILE=$(awk 'END { print }' $1)
 
 # check if any captions are present and apply them
-#for (( i = 1; i <= ${ENTRIES}; i++ )); do
 for FILE in ${ENTRIES[@]}; do
 	# get label for current video
 	LABEL="$(grep "$FILE" $1 | awk -F"=" '{ print $2 }')"
