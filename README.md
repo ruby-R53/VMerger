@@ -46,12 +46,15 @@ awk and FFmpeg. All of which should already come preinstalled in most distros.
 
 ## Current Caveats
 - File names with spaces are currently unsupported. This breaks the script as
-it's unable to handle such information properly.
+  it's unable to handle such information properly.
 - Since this runs solely on the command line, there's no timeline view, which
-makes it hard to find out what the timestamp for each video is.
+  makes it hard to find out what the timestamp for each video is.
 - You might require a TON of RAM for FFmpeg to merge your videos, depending on
-their quality and size. Make sure you at least have big enough swap space for
-it!
+  their quality and size. Make sure you at least have big enough swap space for
+  it!
+- While it does work, it's pretty much still in experimental phase. There's
+  stuff I wanna add to it to make it a little more sophisticated and more
+  usable overall.
 
 ## Contributing
 Feel free to open issues and pull requests! I'm open to suggestions, although
