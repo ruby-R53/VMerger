@@ -24,23 +24,21 @@ RENDER_ARGS=(-c:v libx264 -c:a copy -crf 0 -qp 0 -preset ultrafast -color_range 
 VIDEO_FLTRS=(scale=out_color_matrix=bt709,"${TEXT_PARAMS[@]}")
 
 # get how many files we have to work on
-ENTRIES=$(sed '$ d' $1 | wc -l)
+ENTRIES=("$(sed '$ d' $1 | awk -F"=" '{ print $1 }' | tr '\n' ' ')")
 # and our output file name
 OUTFILE=$(awk 'END { print }' $1)
 
 # check if any captions are present and apply them
-for (( i = 1; i <= ${ENTRIES}; i++ )); do
+#for (( i = 1; i <= ${ENTRIES}; i++ )); do
+for FILE in ${ENTRIES[@]}; do
 	# get label for current video
-	LABEL="$(head -${i} $1 | tail -1 | awk -F"=" '{ print $2 }')"
+	LABEL="$(grep "$FILE" $1 | awk -F"=" '{ print $2 }')"
 
 	# skip this file if there's no label for it
 	[[ -z ${LABEL} ]] && continue
 
 	# create a separate directory for those
 	[[ ! -d "$(pwd)/vmerger" ]] && mkdir "$(pwd)/vmerger"
-
-	# read captions from file line by line
-	FILE="$(head -${i} $1 | tail -1 | awk -F"=" '{ print $1 }')"
 
 	# skip entry if it already exists
 	[[ -r "vmerger/"${FILE}"" ]] && continue
@@ -56,15 +54,13 @@ for (( i = 1; i <= ${ENTRIES}; i++ )); do
 done
 
 # feed files to ffmpeg's input
-for (( i = 1; i <= ${ENTRIES}; i++ )); do
-	FILE="$(head -${i} $1 | tail -1 | awk -F"=" '{ print $1 }')"
-
+for FILE in ${ENTRIES[@]}; do
 	# check if the user wants to merge labeled
 	# or unlabeled videos
 	if [[ -d "$(pwd)/vmerger" ]] &&
 		# also make sure we're pointing to a
 		# labeled video file
-		[[ ! -z "$(head -${i} $1 | tail -1 | awk -F"=" '{ print $2 }')" ]]
+		[[ ! -z "$(grep "$FILE" $1 | awk -F"=" '{ print $2 }')" ]]
 	then
 		FILES+=(-i "vmerger/"${FILE}"")
 	else
@@ -73,7 +69,8 @@ for (( i = 1; i <= ${ENTRIES}; i++ )); do
 done
 
 # tell ffmpeg about the streams we have
-for (( i = 0; i <= $(( ENTRIES - 1 )); i++ )); do
+NSTREAMS=$(sed '$ d' $1 | wc -l)
+for (( i = 0; i <= $(( NSTREAMS - 1 )); i++ )); do
 	STREAMS+="[${i}:v][${i}:a]"
 done
 
@@ -81,6 +78,6 @@ done
 # and make it merge all the videos we've got
 ffmpeg -v "${LOGLVL}" -threads "${THREADS}" "${FILES[@]}" \
 	-crf 0 -qp 0 -preset ultrafast -c:a pcm_f32le \
-	-filter_complex "${STREAMS}"concat=n="${ENTRIES}":v=1:a=1 \
+	-filter_complex "${STREAMS}"concat=n="${NSTREAMS}":v=1:a=1 \
 	"${OUTFILE}"
 	# and finally use last file entry as our output file name
