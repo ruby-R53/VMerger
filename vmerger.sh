@@ -5,16 +5,20 @@
 # together using FFmpeg.
 # Written by ruby R53 on August 2025.
 
-#set -x # for debugging
-set -u # increase safety by aborting on unset variable access
+# increase safety by aborting on unset
+# variable access
+set -u
 
 # make ffmpeg a lil' quiet so that we don't
 # pollute our screen with so much info
 LOGLVL="warning"
-# amount of threads to use on every render
+# amount of threads to use on every render,
+# let's just use all of them by default :)
 THREADS="$(nproc)"
-# text parameters, change this for your
-# labels
+# default text parameters:
+# Noto Sans Bold as font, white, size 48 px,
+# located at the bottom center of the screen
+# change this to your liking
 TEXT_PARAMS=("drawtext='fontfile=Noto Sans\\:style=Bold':fontcolor=white:fontsize=48:x=(w-text_w)/2:y=h-th-10")
 # miscellaneous render arguments
 RENDER_ARGS=(-c:v libx264 -c:a copy -crf 0 -qp 0 -preset ultrafast -color_range 1 -colorspace bt709 -color_trc bt709 -color_primaries bt709 -movflags faststart)
@@ -41,6 +45,11 @@ for FILE in ${ENTRIES[@]}; do
 
 	# skip entry if it already exists
 	[[ -r "vmerger/"${FILE}"" ]] && continue
+
+	# show the user which file we're at, in case ffmpeg doesn't
+	# already do that
+	[[ ${LOGLVL} = "warning" ]] || [[ ${LOGLVL} = "quiet" ]] &&
+		echo "${FILE}"
 
 	# then, actually apply the label to the current video
 	ffmpeg -v "${LOGLVL}" -threads "${THREADS}" -i "${FILE}"\
