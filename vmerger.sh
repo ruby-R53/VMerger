@@ -35,10 +35,10 @@ OUTFILE=$(awk 'END { print }' $1)
 # check if any captions are present and apply them
 for FILE in ${ENTRIES[@]}; do
 	# get label for current video
-	LABEL="$(grep "$FILE" $1 | awk -F"=" '{ print $2 }')"
+	LABEL="$(grep "${FILE}" $1 | awk -F"=" '{ print $2 }')"
 
 	# skip this file if there's no label for it
-	[[ -z ${LABEL} ]] && continue
+	[[ -z "${LABEL}" ]] && continue
 
 	# create a separate directory for those
 	[[ ! -d "$(pwd)/vmerger" ]] && mkdir "$(pwd)/vmerger"
