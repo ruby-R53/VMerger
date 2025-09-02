@@ -127,6 +127,7 @@ case $MERGETYPE in
 		error "invalid concatenation method! \
 			\nValid ones are: (f)ilter, (m)uxer."
 		;;
+esac
 
 # now that we're prepared, actually fire it up
 # and make it merge all the videos we've got
