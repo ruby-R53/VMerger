@@ -42,7 +42,7 @@ $ vmerger.sh funnycompilation.txt
 ```
 That's it! Dead-simple stuff :)
 
-### Difference Between the concat Muxer and Filter
+### Differences Between the concat Muxer and Filter
 - muxer: it won't eat all of your RAM and there won't be a need to re-encode
   the video and audio streams. However, _all_ the videos _must_ be in the
   exact same resolution, framerate, and codec.
