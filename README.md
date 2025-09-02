@@ -47,8 +47,8 @@ That's it! Dead-simple stuff :)
   the video and audio streams. However, _all_ the videos _must_ be in the
   exact same resolution, framerate, and codec.
 - filter: requires a ton of RAM depending on how many videos you have and
-  their quality and you need to re-encode it, however, here you can merge
-  videos with different resolutions, refresh rates and even codecs.
+  their quality and the final video must be re-encoded, however, here you can
+  merge videos with different resolutions, refresh rates and even codecs.
 
 **Choose what fits your use-case the best.**
 
