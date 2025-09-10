@@ -11,7 +11,7 @@ error() {
 	tput setaf 7
 	echo -n ": "
 	tput sgr0
-	echo $1
+	echo -e $1
 
 	exit 1
 }
@@ -43,7 +43,7 @@ VIDEO_FLTRS=(scale=out_color_matrix=bt709,"${TEXT_PARAMS[@]}")
 # get how many files we have to work on
 ENTRIES=("$(sed '$ d' $1 | awk -F"=" '{ print $1 }' | tr '\n' ' ')")
 # and our output file name
-OUTFILE=$(awk -e 'END { print }' -F"=" -e '{ print $1 }' $1)
+OUTFILE=$(awk -F"=" 'END { print $1 }' $1)
 
 for FILE in ${ENTRIES[@]}; do
 	# get label for current video
@@ -76,7 +76,7 @@ for FILE in ${ENTRIES[@]}; do
 	[[ $? != '0' ]] && rmdir "vmerger/" && exit 1
 done
 
-MERGETYPE="$(awk -e 'END { print }' -F"=" -e '{ print $2 }' $1)"
+MERGETYPE=$(awk -F"=" 'END { print $2 }' $1)
 case $MERGETYPE in
 	"filter" | "f")
 		# feed files to ffmpeg's input
@@ -120,11 +120,11 @@ case $MERGETYPE in
 			done
 		fi
 
-		MERGEOPTS=(-f concat -i /tmp/$1.vmr -c copy)
+		MERGEOPTS=(-f concat -safe 0 -i /tmp/$1.vmr -c copy)
 		;;
 
 	*)
-		error "invalid concatenation method! \
+		error "invalid concatenation method!
 			\nValid ones are: (f)ilter, (m)uxer."
 		;;
 esac
